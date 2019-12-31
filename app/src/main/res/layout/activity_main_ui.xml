@@ -45,18 +45,33 @@
             app:icon_height="25dp"
             app:icon_width="25dp" />
         <whut.com.myapp.UI.ToolBarRadioButton
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:checked="false"
+        android:gravity="center"
+        android:paddingTop="3dp"
+        android:text="计时"
+        android:textColor="#555"
+        android:textSize="13sp"
+        app:defocus_icon="@drawable/count_normal"
+        app:focus_color="@color/blue"
+        app:focus_icon="@drawable/count_press"
+        app:icon_height="25dp"
+        app:icon_width="25dp" />
+        <whut.com.myapp.UI.ToolBarRadioButton
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:checked="false"
             android:gravity="center"
             android:paddingTop="3dp"
-            android:text="计时"
+            android:text="更多"
             android:textColor="#555"
             android:textSize="13sp"
-            app:defocus_icon="@drawable/count_normal"
+            app:defocus_icon="@drawable/more_normal"
             app:focus_color="@color/blue"
-            app:focus_icon="@drawable/count_press"
+            app:focus_icon="@drawable/more_press"
             app:icon_height="25dp"
             app:icon_width="25dp" />
     </whut.com.myapp.UI.ToolBarRadioGroup>

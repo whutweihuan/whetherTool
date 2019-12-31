@@ -14,6 +14,8 @@ import com.google.gson.Gson;
 import interfaces.heweather.com.interfacesmodule.bean.Code;
 import interfaces.heweather.com.interfacesmodule.bean.Lang;
 import interfaces.heweather.com.interfacesmodule.bean.Unit;
+import interfaces.heweather.com.interfacesmodule.bean.basic.Update;
+import interfaces.heweather.com.interfacesmodule.bean.weather.hourly.Hourly;
 import interfaces.heweather.com.interfacesmodule.bean.weather.now.Now;
 import interfaces.heweather.com.interfacesmodule.bean.weather.now.NowBase;
 import interfaces.heweather.com.interfacesmodule.view.HeWeather;
@@ -26,8 +28,9 @@ import whut.com.myapp.R;
 public class WhetherFragment extends Fragment {
     TextView tv_cityname;
     TextView tv_now_wendu;
-    TextView tv_now_shidu;
+    TextView tv_now_wind_dir;
     TextView tv_now_st;
+    TextView tv_lastUpdateTime;
 
     public WhetherFragment() {
         // Required empty public constructor
@@ -49,7 +52,8 @@ public class WhetherFragment extends Fragment {
         tv_cityname = (TextView) view.findViewById(R.id.cityname);
         tv_now_wendu = (TextView) view.findViewById(R.id.now_wendu);
         tv_now_st = (TextView)view.findViewById(R.id.now_st);
-        tv_now_shidu = (TextView)view.findViewById(R.id.now_shidu);
+        tv_now_wind_dir = (TextView)view.findViewById(R.id.tv_now_wind_dir);
+        tv_lastUpdateTime = (TextView) view.findViewById(R.id.tv_lastUpdateTime);
 
         HeWeather.getWeatherNow(getActivity(), "CN101200101", Lang.CHINESE_SIMPLIFIED, Unit.METRIC, new HeWeather.OnResultWeatherNowBeanListener() {
             @Override
@@ -59,14 +63,16 @@ public class WhetherFragment extends Fragment {
 
             @Override
             public void onSuccess(Now dataObject) {
-                Log.i("124", " Weather Now onSuccess: " + new Gson().toJson(dataObject));
+                Log.i("weihuan", " Weather Now onSuccess: " + new Gson().toJson(dataObject));
                 //先判断返回的status是否正确，当status正确时获取数据，若status不正确，可查看status对应的Code值找到原因
                 if (Code.OK.getCode().equalsIgnoreCase(dataObject.getStatus())) {
                     //此时返回数据
                     NowBase now = dataObject.getNow();
-                    tv_now_wendu.setText(now.getTmp()+"°");
-                    tv_now_shidu.setText("湿度: "+now.getHum());
+                    Update update = dataObject.getUpdate();
+                    tv_now_wendu.setText(now.getTmp());
+                    tv_now_wind_dir.setText(now.getWind_dir());
                     tv_now_st.setText( now.getCond_txt());
+                    tv_lastUpdateTime.setText(tv_lastUpdateTime.getText()+update.getLoc());
 
                 } else {
                     //在此查看返回数据失败的原因
@@ -76,5 +82,30 @@ public class WhetherFragment extends Fragment {
                 }
             }
         });
+
+        HeWeather.getWeatherHourly(getActivity(), "CN101200101", Lang.CHINESE_SIMPLIFIED, Unit.METRIC, new HeWeather.OnResultWeatherHourlyBeanListener() {
+            @Override
+            public void onError(Throwable e) {
+                Log.i("Hourly Error",e.toString());
+            }
+
+            @Override
+            public void onSuccess(Hourly dataObject) {
+                Log.i("weihuan2", " Weather Now onSuccess: " + new Gson().toJson(dataObject));
+                //先判断返回的status是否正确，当status正确时获取数据，若status不正确，可查看status对应的Code值找到原因
+                if (Code.OK.getCode().equalsIgnoreCase(dataObject.getStatus())) {
+                    //此时返回数据
+
+
+                } else {
+                    //在此查看返回数据失败的原因
+                    String status = dataObject.getStatus();
+                    Code code = Code.toEnum(status);
+                    Log.i("125", "failed code: " + code);
+                }
+            }
+        });
+
+
     }
 }
