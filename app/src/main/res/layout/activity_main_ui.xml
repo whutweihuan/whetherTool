@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main_ui"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context=".UI.MainUIActivity">
+
+    <whut.com.myapp.UI.ToolBarRadioGroup xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/radiogroup"
+        android:layout_width="match_parent"
+        android:background="@android:color/white"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+        <whut.com.myapp.UI.ToolBarRadioButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:checked="true"
+            android:gravity="center"
+            android:paddingTop="3dp"
+            android:text="天气"
+            android:textColor="#555"
+            android:textSize="13sp"
+            app:defocus_icon="@drawable/toolbar_cloud_normal"
+            app:focus_color="@color/blue"
+            app:focus_icon="@drawable/toolbar_cloud_press"
+            app:icon_height="25dp"
+            app:icon_width="25dp" />
+        <whut.com.myapp.UI.ToolBarRadioButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:checked="false"
+            android:gravity="center"
+            android:paddingTop="3dp"
+            android:text="闹钟"
+            android:textColor="#555"
+            android:textSize="13sp"
+            app:defocus_icon="@drawable/alarm_normal"
+            app:focus_color="@color/blue"
+            app:focus_icon="@drawable/alarm_press"
+            app:icon_height="25dp"
+            app:icon_width="25dp" />
+        <whut.com.myapp.UI.ToolBarRadioButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:checked="false"
+            android:gravity="center"
+            android:paddingTop="3dp"
+            android:text="计时"
+            android:textColor="#555"
+            android:textSize="13sp"
+            app:defocus_icon="@drawable/count_normal"
+            app:focus_color="@color/blue"
+            app:focus_icon="@drawable/count_press"
+            app:icon_height="25dp"
+            app:icon_width="25dp" />
+    </whut.com.myapp.UI.ToolBarRadioGroup>
+
+    <View
+        android:id="@+id/v_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#f3fefe"
+        android:layout_above="@id/radiogroup" />
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/v_line"/>
+
+</RelativeLayout>
