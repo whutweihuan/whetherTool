@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        HeConfig.init("HE1912301700331680", "744a3fe9e3634724967a741e8df9d161");
-        HeConfig.switchToFreeServerNode();
+        HeConfig.init("HE1912311844551513", "b45967b119604ef485b69c73c497a5c3");
+//        HeConfig.switchToFreeServerNode();
         Intent intent = new Intent(this, MainUIActivity.class);
         startActivity(intent);
     }
