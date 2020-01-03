@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,6 +57,8 @@ public class WhetherFragment extends Fragment {
 
     SharedPreferences sp = null;
     SharedPreferences.Editor editor = null;
+
+    SwipeRefreshLayout swp_rlt;
 
 
     // 实时天气状况
@@ -136,7 +139,7 @@ public class WhetherFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_whether, container, false);
         sp = getActivity().getSharedPreferences("whether_data", MODE_PRIVATE);
         editor = sp.edit();
-        sp.edit().putString("first", "1");
+        sp.edit().putString("first", "yes");
         sp.edit().commit();
         initView(view);
 
@@ -148,6 +151,17 @@ public class WhetherFragment extends Fragment {
         dic.put("晴", R.drawable.sun_icon);
         dic.put("雨", R.drawable.rain);
         dic.put("小雨", R.drawable.rain);
+
+        swp_rlt = (SwipeRefreshLayout)view.findViewById(R.id.swp_rlt);
+        swp_rlt.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                editor.putString("first","yes");
+                editor.commit();
+                initWhetherData();
+                swp_rlt.setRefreshing(false);
+            }
+        });
 
         tv_cityname = (TextView) view.findViewById(R.id.cityname);
         tv_now_wendu = (TextView) view.findViewById(R.id.now_wendu);
@@ -212,9 +226,9 @@ public class WhetherFragment extends Fragment {
     }
 
     public void initWhetherData() {
-        final String first = sp.getString("first", "1");
+        final String first = sp.getString("first", "yes");
         // 含有数据，不是第一次
-        if (first.equals("0")) {
+        if (first.equals("no")) {
             try{
                 Gson gson = new Gson();
                 String json = sp.getString(NOW_STAUS,"");
@@ -244,7 +258,10 @@ public class WhetherFragment extends Fragment {
             return;
         }
 
-        // 第一次运行
+        // 第一次运行，现在不是了
+        editor.putString("first","no");
+        editor.commit();
+
         /**
          * 获得当前时间的状况
          */
@@ -476,7 +493,7 @@ public class WhetherFragment extends Fragment {
         tv_now_wendu.setText(now.getTmp());
         tv_now_wind_dir.setText(now.getWind_dir());
         tv_now_st.setText(now.getCond_txt());
-        tv_lastUpdateTime.setText(tv_lastUpdateTime.getText() + update.getLoc());
+        tv_lastUpdateTime.setText(update.getLoc());
     }
 
 }
