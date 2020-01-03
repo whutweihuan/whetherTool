@@ -3,22 +3,30 @@ package whut.com.myapp.UI;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.github.lzyzsd.circleprogress.ArcProgress;
 import com.google.gson.Gson;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import interfaces.heweather.com.interfacesmodule.bean.Code;
@@ -45,7 +53,7 @@ import static android.content.Context.MODE_PRIVATE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class WhetherFragment extends Fragment {
+public class WhetherFragment extends Fragment implements View.OnClickListener {
     // 用于缓存保存数据的字符串索引
     private final String NOW_STAUS = "NOW_STATUS";
     private final String HOURLY = "HOURLY";
@@ -114,6 +122,13 @@ public class WhetherFragment extends Fragment {
     TextView tv_tip_zwx;
     TextView tv_tips_cloth;
     TextView tv_tip_fever;
+
+    RelativeLayout rlt_tips_sport;
+    RelativeLayout rlt_tip_zwx;
+    RelativeLayout rlt_tips_cloth;
+    RelativeLayout rlt_tip_fever;
+
+
 
     // 空气质量
 
@@ -211,6 +226,16 @@ public class WhetherFragment extends Fragment {
         tv_tip_zwx = (TextView) view.findViewById(R.id.tv_tip_zwx);
         tv_tips_cloth = (TextView) view.findViewById(R.id.tv_tips_cloth);
         tv_tip_fever = (TextView) view.findViewById(R.id.tv_tip_fever);
+
+        rlt_tips_sport = (RelativeLayout) view.findViewById(R.id.rlt_tips_sport);
+        rlt_tip_zwx = (RelativeLayout) view.findViewById(R.id.rlt_tips_zwx);
+        rlt_tips_cloth = (RelativeLayout) view.findViewById(R.id.rlt_tips_cloth);
+        rlt_tip_fever = (RelativeLayout) view.findViewById(R.id.rlt_tips_fever);
+
+        rlt_tips_sport.setOnClickListener(this);
+        rlt_tip_zwx.setOnClickListener(this);
+        rlt_tips_cloth.setOnClickListener(this);
+        rlt_tip_fever.setOnClickListener(this);
 
         arc_progress = (ArcProgress) view.findViewById(R.id.arc_progress);
 
@@ -493,7 +518,51 @@ public class WhetherFragment extends Fragment {
         tv_now_wendu.setText(now.getTmp());
         tv_now_wind_dir.setText(now.getWind_dir());
         tv_now_st.setText(now.getCond_txt());
-        tv_lastUpdateTime.setText(update.getLoc());
+//        Date currentTime = Calendar.getInstance().getTime();
+//        tv_lastUpdateTime.setText(currentTime.toString());
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        tv_lastUpdateTime.setText(sdf.format(new Date()));
+
     }
+
+    @Override
+    public void onClick(View v) {
+        //1-衣服
+        //3-运动
+        //5-紫外线
+        //2-感冒
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        String json = sp.getString(LIFECOC,"");
+        Lifestyle lifestyle = new Gson().fromJson(json,Lifestyle.class);
+        List<LifestyleBase> lifes = lifestyle.getLifestyle();
+        switch (v.getId()){
+            case R.id.rlt_tips_cloth:
+                builder.setTitle("衣物");
+                builder.setPositiveButton("确定",null);
+                builder.setMessage(lifes.get(1).getTxt());
+                builder.show();
+                break;
+            case R.id.rlt_tips_sport:
+                builder.setTitle("运动");
+                builder.setPositiveButton("确定",null);
+                builder.setMessage(lifes.get(3).getTxt());
+                builder.show();
+                break;
+            case R.id.rlt_tips_zwx:
+                builder.setTitle("紫外线");
+                builder.setPositiveButton("确定",null);
+                builder.setMessage(lifes.get(5).getTxt());
+                builder.show();
+                break;
+            case R.id.rlt_tips_fever:
+                builder.setTitle("感冒");
+                builder.setPositiveButton("确定",null);
+                builder.setMessage(lifes.get(2).getTxt());
+                builder.show();
+                break;
+        }
+    }
+
+
 
 }

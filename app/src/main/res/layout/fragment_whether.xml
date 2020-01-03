@@ -614,6 +614,7 @@
                     android:orientation="horizontal">
 
                     <RelativeLayout
+                        android:id="@+id/rlt_tips_sport"
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
                         android:layout_weight="1"
@@ -649,6 +650,7 @@
                         android:background="@color/_8c8c8c" />
 
                     <RelativeLayout
+                        android:id="@+id/rlt_tips_zwx"
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
                         android:layout_weight="1"
@@ -691,6 +693,7 @@
                     android:orientation="horizontal">
 
                     <RelativeLayout
+                        android:id="@+id/rlt_tips_cloth"
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
                         android:layout_weight="1"
@@ -726,6 +729,7 @@
                         android:background="@color/_8c8c8c" />
 
                     <RelativeLayout
+                        android:id="@+id/rlt_tips_fever"
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
                         android:layout_weight="1"
