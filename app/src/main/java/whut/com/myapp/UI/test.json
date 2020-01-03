@@ -1,0 +1,76 @@
+{
+  "daily_forecast": [
+    {
+      "cond_code_d": "305",
+      "cond_code_n": "305",
+      "cond_txt_d": "小雨",
+      "cond_txt_n": "小雨",
+      "date": "2020-01-03",
+      "hum": "84",
+      "pcpn": "0.0",
+      "pop": "24",
+      "pres": "1022",
+      "tmp_max": "6",
+      "tmp_min": "4",
+      "uv_index": "1",
+      "vis": "24",
+      "wind_deg": "359",
+      "wind_dir": "北风",
+      "wind_sc": "1-2",
+      "wind_spd": "5"
+    },
+    {
+      "cond_code_d": "305",
+      "cond_code_n": "305",
+      "cond_txt_d": "小雨",
+      "cond_txt_n": "小雨",
+      "date": "2020-01-04",
+      "hum": "92",
+      "pcpn": "2.3",
+      "pop": "63",
+      "pres": "1016",
+      "tmp_max": "10",
+      "tmp_min": "6",
+      "uv_index": "1",
+      "vis": "21",
+      "wind_deg": "100",
+      "wind_dir": "东风",
+      "wind_sc": "1-2",
+      "wind_spd": "8"
+    },
+    {
+      "cond_code_d": "305",
+      "cond_code_n": "305",
+      "cond_txt_d": "小雨",
+      "cond_txt_n": "小雨",
+      "date": "2020-01-05",
+      "hum": "95",
+      "pcpn": "1.0",
+      "pop": "55",
+      "pres": "1015",
+      "tmp_max": "10",
+      "tmp_min": "8",
+      "uv_index": "1",
+      "vis": "12",
+      "wind_deg": "96",
+      "wind_dir": "东风",
+      "wind_sc": "1-2",
+      "wind_spd": "2"
+    }
+  ],
+  "basic": {
+    "admin_area": "湖北",
+    "cid": "CN101200101",
+    "cnty": "中国",
+    "lat": "30.5843544",
+    "location": "武汉",
+    "lon": "114.29856873",
+    "parent_city": "武汉",
+    "tz": "+8.00"
+  },
+  "status": "ok",
+  "update": {
+    "loc": "2020-01-03 10:56",
+    "utc": "2020-01-03 02:56"
+  }
+}
