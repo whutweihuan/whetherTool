@@ -37,5 +37,6 @@ public class MainActivity extends AppCompatActivity {
 //        HeConfig.switchToFreeServerNode();
         Intent intent = new Intent(this, MainUIActivity.class);
         startActivity(intent);
+        finish();
     }
 }
