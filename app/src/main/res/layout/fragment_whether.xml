@@ -45,34 +45,27 @@
         </LinearLayout>
 
         <!--地点和图标-->
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:orientation="horizontal">
+            >
 
             <TextView
+                android:layout_centerHorizontal="true"
                 android:id="@+id/cityname"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="right|center_vertical"
+                android:gravity="center"
                 android:text="武汉"
                 android:textSize="20sp" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="left">
-
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_toRightOf="@+id/cityname"
                     android:paddingLeft="0dp"
                     android:src="@drawable/address" />
-            </LinearLayout>
-        </LinearLayout>
+
+        </RelativeLayout>
 
         <!--风向-->
         <LinearLayout
@@ -619,7 +612,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:text="不带" />
+                        android:text="不宜" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -810,6 +803,7 @@
                         android:text="PM10" />
 
                     <TextView
+                        android:id="@+id/tv_air_pm10"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -829,6 +823,7 @@
                         android:text="PM2.5" />
 
                     <TextView
+                        android:id="@+id/tv_air_pm25"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -848,6 +843,7 @@
                         android:text="NO2" />
 
                     <TextView
+                        android:id="@+id/tv_air_no2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -867,6 +863,7 @@
                         android:text="SO2" />
 
                     <TextView
+                        android:id="@+id/tv_air_so2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -886,6 +883,7 @@
                         android:text="O3" />
 
                     <TextView
+                        android:id="@+id/tv_air_o3"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -905,6 +903,7 @@
                         android:text="CO" />
 
                     <TextView
+                        android:id="@+id/tv_air_co"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
