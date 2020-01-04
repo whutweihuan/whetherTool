@@ -1,6 +1,7 @@
 package whut.com.myapp.UI;
 
 
+import android.Manifest;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,14 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.github.lzyzsd.circleprogress.ArcProgress;
 import com.google.gson.Gson;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.karumi.dexter.listener.single.PermissionListener;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
 
@@ -49,6 +58,7 @@ import interfaces.heweather.com.interfacesmodule.bean.weather.now.NowBase;
 import interfaces.heweather.com.interfacesmodule.view.HeWeather;
 import whut.com.myapp.R;
 
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -666,30 +676,48 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
     }
 
     public void locationByGPS() {
-        HeWeather.getSearch(getActivity(), new HeWeather.OnResultSearchBeansListener() {
-            @Override
-            public void onError(Throwable e) {
-                e.printStackTrace();
-                Toast.makeText(getContext(), "没有定位权限", Toast.LENGTH_SHORT);
-                return;
-            }
+        Dexter.withActivity(getActivity())
+                .withPermissions(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION).
+                withListener(new MultiplePermissionsListener() {
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport report) {
+                        if (report.getGrantedPermissionResponses().size() > 0){
+                            HeWeather.getSearch(getActivity(), new HeWeather.OnResultSearchBeansListener() {
+                                @Override
+                                public void onError(Throwable e) {
+                                    e.printStackTrace();
+                                    Toast.makeText(getContext(), "没有定位权限", Toast.LENGTH_SHORT);
+                                    return;
+                                }
 
-            @Override
-            public void onSuccess(Search dataObject) {
-                if (Code.OK.getCode().equalsIgnoreCase(dataObject.getStatus())) {
-                    locationCN = dataObject.getBasic().get(0).getCid();
-                    editor.putString("first", "yes");
-                    editor.commit();
-                    initWhetherData();
+                                @Override
+                                public void onSuccess(Search dataObject) {
+                                    if (Code.OK.getCode().equalsIgnoreCase(dataObject.getStatus())) {
+                                        locationCN = dataObject.getBasic().get(0).getCid();
+                                        editor.putString("first", "yes");
+                                        editor.commit();
+                                        initWhetherData();
 
-                } else {
-                    //在此查看返回数据失败的原因
-                    String status = dataObject.getStatus();
-                    Code code = Code.toEnum(status);
-                    Log.i("125", "failed code: " + code);
-                }
-            }
-        });
+                                    } else {
+                                        //在此查看返回数据失败的原因
+                                        String status = dataObject.getStatus();
+                                        Code code = Code.toEnum(status);
+                                        Log.i("125", "failed code: " + code);
+                                    }
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+                        Toast.makeText(getContext(),"没有定位权限",Toast.LENGTH_SHORT);
+                    }
+                }).check();
+
+
     }
 
 }

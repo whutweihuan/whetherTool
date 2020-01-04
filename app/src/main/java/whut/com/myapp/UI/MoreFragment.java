@@ -1,6 +1,9 @@
 package whut.com.myapp.UI;
 
 
+import android.Manifest;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -26,8 +29,15 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.Result;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
 
@@ -41,6 +51,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import me.dm7.barcodescanner.zxing.ZXingScannerView;
 import whut.com.myapp.R;
 
 /**
@@ -50,11 +61,11 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
     // 扫描二维码
     private EditText et_origin_text;
     private MaterialButton btn_genQR_ok;
-    private RelativeLayout  rlt_showImg;
+    private RelativeLayout rlt_showImg;
     private ImageView iv_showImg;
 
     // 背景图片更换
-    CardView cv_change_background;
+    CardView cv_toScanner_QRcode;
     LinearLayout ll_morefragment_bkg;
 
     // 汇率转换
@@ -66,9 +77,15 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
     private MaterialButton btn_money_ok;
     private int moneyId1 = 0;
     private int moneyId2 = 1;
-    List<String> moneyName = Arrays.asList("人民币","美元","日元","欧元","英镑");
-    List<Double> moneyRate = new ArrayList<>();
+    private List<String> moneyName = Arrays.asList("人民币", "美元", "日元", "欧元", "英镑");
+    private List<Double> moneyRate = new ArrayList<>();
 
+    // 相机
+    private ZXingScannerView scanner_view;
+    private ZXingScannerView.ResultHandler mResultHandler = null;
+    private RelativeLayout rlt_camera;
+    private MaterialButton btn_camera_continue;
+    private MaterialButton btn_camera_cancel;
 
 
     public MoreFragment() {
@@ -86,24 +103,24 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
-    public void initView(View view){
-        et_origin_text = (EditText)view.findViewById(R.id.et_origin_text);
-        btn_genQR_ok = (MaterialButton)view.findViewById(R.id.btn_genQR_ok);
+    public void initView(View view) {
+        et_origin_text = (EditText) view.findViewById(R.id.et_origin_text);
+        btn_genQR_ok = (MaterialButton) view.findViewById(R.id.btn_genQR_ok);
         btn_genQR_ok.setOnClickListener(this);
-        iv_showImg = (ImageView)view.findViewById(R.id.iv_showImg);
-        rlt_showImg = (RelativeLayout)view.findViewById(R.id.rlt_showImg);
+        iv_showImg = (ImageView) view.findViewById(R.id.iv_showImg);
+        rlt_showImg = (RelativeLayout) view.findViewById(R.id.rlt_showImg);
         rlt_showImg.setOnClickListener(this);
 
-        cv_change_background = (CardView)view.findViewById(R.id.cv_change_background);
-        cv_change_background.setOnClickListener(this);
-        ll_morefragment_bkg = (LinearLayout)view.findViewById(R.id.ll_morefragment_bkg);
+        cv_toScanner_QRcode = (CardView) view.findViewById(R.id.cv_toScanner_QRcode);
+        cv_toScanner_QRcode.setOnClickListener(this);
+        ll_morefragment_bkg = (LinearLayout) view.findViewById(R.id.ll_morefragment_bkg);
 
-        btn_money1 = (MaterialButton)view.findViewById(R.id.btn_money1);
-        btn_money2 = (MaterialButton)view.findViewById(R.id.btn_money2);
-        et_money_text = (EditText)view.findViewById(R.id.et_money_text);
-        iv_swap_money = (ImageView)view.findViewById(R.id.iv_swap_money);
-        tv_money_result = (TextView)view.findViewById(R.id.tv_money_result);
-        btn_money_ok = (MaterialButton)view.findViewById(R.id.btn_money_ok);
+        btn_money1 = (MaterialButton) view.findViewById(R.id.btn_money1);
+        btn_money2 = (MaterialButton) view.findViewById(R.id.btn_money2);
+        et_money_text = (EditText) view.findViewById(R.id.et_money_text);
+        iv_swap_money = (ImageView) view.findViewById(R.id.iv_swap_money);
+        tv_money_result = (TextView) view.findViewById(R.id.tv_money_result);
+        btn_money_ok = (MaterialButton) view.findViewById(R.id.btn_money_ok);
         btn_money_ok.setOnClickListener(this);
         btn_money1.setOnClickListener(this);
         btn_money2.setOnClickListener(this);
@@ -116,33 +133,56 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
         btn_money1.setText(moneyName.get(moneyId1));
         btn_money2.setText(moneyName.get(moneyId2));
 
+//        scanner_view = new ZXingScannerView(getContext());
+        scanner_view = (ZXingScannerView) view.findViewById(R.id.scanner_view);
+        rlt_camera = (RelativeLayout) view.findViewById(R.id.rlt_camera);
+        btn_camera_continue = (MaterialButton) view.findViewById(R.id.btn_camera_continue);
+        btn_camera_cancel = (MaterialButton) view.findViewById(R.id.btn_camera_cancel);
+        btn_camera_cancel.setOnClickListener(this);
+        btn_camera_continue.setOnClickListener(this);
+        btn_camera_continue.setClickable(false);
 
+        mResultHandler = new ZXingScannerView.ResultHandler() {
+            @Override
+            public void handleResult(Result result) {
+//                scanner_view.resumeCameraPreview(mResultHandler); //重新进入扫描二维码
+                btn_camera_continue.setClickable(true);
+//                Toast.makeText(getContext(), "内容=" + result.getText() + ",格式=" + result.getBarcodeFormat().toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),"已经复制到粘贴板中",Toast.LENGTH_SHORT).show();
+
+                // 复制到系统粘贴板中
+                ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(getActivity().CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("QRcode", result.getText().toString());
+                clipboard.setPrimaryClip(clip);
+            }
+        };
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.btn_genQR_ok:
                 String text = et_origin_text.getText().toString();
-                if(text == null || text.length() == 0){
-                    Toast.makeText(getContext(),"内容为空",Toast.LENGTH_SHORT).show();
+                if (text == null || text.length() == 0) {
+                    Toast.makeText(getContext(), "内容为空", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 QRCodeWriter qrCodeWriter = new QRCodeWriter();
                 try {
                     BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-                    text = new String(text.getBytes("UTF-8"),"iso-8859-1");
+                    text = new String(text.getBytes("UTF-8"), "iso-8859-1");
                     Bitmap bitmap = barcodeEncoder.encodeBitmap(text, BarcodeFormat.QR_CODE, 400, 400);
-                    String path = Environment.getExternalStorageDirectory().toString();;
-                    File file = new File(path,"MyQrImage.png");
+                    String path = Environment.getExternalStorageDirectory().toString();
+                    ;
+                    File file = new File(path, "MyQrImage.png");
                     FileOutputStream out = new FileOutputStream(file);
 
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
 
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG,100,baos);
-                    byte []bytes = baos.toByteArray();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                    byte[] bytes = baos.toByteArray();
                     Glide.with(getContext()).load(bytes).into(iv_showImg);
                     rlt_showImg.setVisibility(View.VISIBLE);
                     // 缩起软键盘
@@ -158,23 +198,13 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
                 rlt_showImg.setVisibility(View.GONE);
                 break;
 
-            // 下面这个代码没有什么大作用
-            case R.id.cv_change_background:
-                int a = 1;
-                Glide.with(getContext())
-                        .load("https://uploadbeta.com/api/pictures/random/?key=%E6%8E%A8%E5%A5%B3%E9%83%8E")
-                        .asBitmap()
-                        .into(new SimpleTarget<Bitmap>() {
-                            @Override
-                            public void onResourceReady(Bitmap bitmap, GlideAnimation<? super Bitmap> glideAnimation) {
-                                Drawable drawable = new BitmapDrawable(bitmap);
-                                ll_morefragment_bkg.setBackground(drawable);
-                            }
-                        });
-                 break;
+            case R.id.cv_toScanner_QRcode:
+
+                scannerQRcode();
+                break;
             case R.id.btn_money1:
                 ArrayAdapter adapter = new ArrayAdapter(getContext(),
-                        R.layout.dialog_simple_itme1,moneyName);
+                        R.layout.dialog_simple_itme1, moneyName);
                 DialogPlus dialog = DialogPlus.newDialog(getActivity())
                         .setAdapter(adapter)
                         .setContentBackgroundResource(R.color.white)
@@ -182,9 +212,9 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
                         .setOnItemClickListener(new OnItemClickListener() {
                             @Override
                             public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                               moneyId1 = position;
-                               btn_money1.setText(moneyName.get(position));
-                               dialog.dismiss();
+                                moneyId1 = position;
+                                btn_money1.setText(moneyName.get(position));
+                                dialog.dismiss();
                             }
                         })
                         .setExpanded(true)  // This will enable the expand feature, (similar to android L share dialog)
@@ -194,7 +224,7 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
 
             case R.id.btn_money2:
                 ArrayAdapter adapter2 = new ArrayAdapter(getContext(),
-                        R.layout.dialog_simple_itme1,moneyName);
+                        R.layout.dialog_simple_itme1, moneyName);
                 DialogPlus dialog2 = DialogPlus.newDialog(getActivity())
                         .setAdapter(adapter2)
                         .setContentBackgroundResource(R.color.white)
@@ -222,8 +252,8 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
 
             case R.id.btn_money_ok:
                 String text2 = et_money_text.getText().toString();
-                if(text2 == null || text2.length()==0){
-                    Toast.makeText(getContext(),"不能为空",Toast.LENGTH_SHORT).show();
+                if (text2 == null || text2.length() == 0) {
+                    Toast.makeText(getContext(), "不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 Double moneyNum = Double.parseDouble(text2);
@@ -237,7 +267,61 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
                 imm.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getWindowToken(), 0);
 
                 break;
+            case R.id.btn_camera_continue:
+                btn_camera_continue.setClickable(false);
+                scanner_view.resumeCameraPreview(mResultHandler);
+                break;
+            case R.id.btn_camera_cancel:
+                scanner_view.stopCamera();
+                rlt_camera.setVisibility(View.GONE);
+                break;
         }
 
+    }
+
+    public void scannerQRcode() {
+        rlt_camera.setVisibility(View.VISIBLE);
+        Dexter.withActivity(getActivity())
+                .withPermission(Manifest.permission.CAMERA)
+                .withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+
+                        scanner_view.setResultHandler(mResultHandler);
+                        scanner_view.startCamera();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {
+
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+
+                    }
+                })
+                .check();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        scanner_view.stopCamera();
+        rlt_camera.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        scanner_view.stopCamera();
+        rlt_camera.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        scanner_view.stopCamera();
+        rlt_camera.setVisibility(View.GONE);
     }
 }

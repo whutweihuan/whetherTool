@@ -4,7 +4,6 @@
     package="whut.com.myapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     //ACCESS_FINE_LOCATION：允许APP访问精确地理位置。
@@ -12,7 +11,12 @@
     //ACCESS_COARSE_LOCATION：允许APP访问大概地理位置
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    // 读写权限
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    // 相机权限
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
 
     <application
