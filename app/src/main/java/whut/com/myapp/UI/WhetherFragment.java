@@ -1,28 +1,30 @@
 package whut.com.myapp.UI;
 
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.github.lzyzsd.circleprogress.ArcProgress;
 import com.google.gson.Gson;
+import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.OnItemClickListener;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,10 +34,10 @@ import java.util.Map;
 import interfaces.heweather.com.interfacesmodule.bean.Code;
 import interfaces.heweather.com.interfacesmodule.bean.Lang;
 import interfaces.heweather.com.interfacesmodule.bean.Unit;
-import interfaces.heweather.com.interfacesmodule.bean.air.Air;
 import interfaces.heweather.com.interfacesmodule.bean.air.now.AirNow;
 import interfaces.heweather.com.interfacesmodule.bean.air.now.AirNowCity;
 import interfaces.heweather.com.interfacesmodule.bean.basic.Update;
+import interfaces.heweather.com.interfacesmodule.bean.search.Search;
 import interfaces.heweather.com.interfacesmodule.bean.weather.forecast.Forecast;
 import interfaces.heweather.com.interfacesmodule.bean.weather.forecast.ForecastBase;
 import interfaces.heweather.com.interfacesmodule.bean.weather.hourly.Hourly;
@@ -45,7 +47,6 @@ import interfaces.heweather.com.interfacesmodule.bean.weather.lifestyle.Lifestyl
 import interfaces.heweather.com.interfacesmodule.bean.weather.now.Now;
 import interfaces.heweather.com.interfacesmodule.bean.weather.now.NowBase;
 import interfaces.heweather.com.interfacesmodule.view.HeWeather;
-import whut.com.myapp.MainActivity;
 import whut.com.myapp.R;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -61,12 +62,18 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
     private final String LIFECOC = "LIFECOC";
     private final String AIRCOC = "AIRCOC";
 
+    // 映射天天气图片
     Map<String, Integer> dic = new HashMap<>();
 
+    // 缓存
     SharedPreferences sp = null;
     SharedPreferences.Editor editor = null;
 
+    // 下拉刷新
     SwipeRefreshLayout swp_rlt;
+
+    // 保存地名 CN 码（和风天气地名的ID）
+    String locationCN = "CN101200101";
 
 
     // 实时天气状况
@@ -154,18 +161,60 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_whether, container, false);
         sp = getActivity().getSharedPreferences("whether_data", MODE_PRIVATE);
         editor = sp.edit();
-        sp.edit().putString("first", "yes");
-        sp.edit().commit();
+
         initView(view);
+
+
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),R.layout.support_simple_spinner_dropdown_item,new String[]{"1","2","3"});
+//        DialogPlus dialog = DialogPlus.newDialog(getActivity())
+//                .setAdapter(adapter)
+//                .setContentHolder(new ListHolder())
+//                .setOnItemClickListener(new OnItemClickListener() {
+//                    @Override
+//                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+//                    }
+//                })
+//                .setExpanded(true)  // This will enable the expand feature, (similar to android L share dialog)
+//                .create();
+//        dialog.show();
+
 
         return view;
     }
 
     public void initView(View view) {
         dic.put("阴", R.drawable.more_cloud);
-        dic.put("晴", R.drawable.sun_icon);
+        dic.put("多云", R.drawable.more_cloud);
+        dic.put("晴间多云", R.drawable.more_cloud);
+        dic.put("少云", R.drawable.more_cloud);
+        dic.put("晴", R.drawable.sun_zwx);
         dic.put("雨", R.drawable.rain);
         dic.put("小雨", R.drawable.rain);
+        dic.put("大雨", R.drawable.rain);
+        dic.put("中雨", R.drawable.rain);
+        dic.put("极端降雨", R.drawable.rain);
+        dic.put("毛毛雨/细雨", R.drawable.rain);
+        dic.put("暴雨", R.drawable.rain);
+        dic.put("大暴雨", R.drawable.rain);
+        dic.put("特大暴雨", R.drawable.rain);
+        dic.put("冻雨", R.drawable.rain);
+        dic.put("小到中雨", R.drawable.rain);
+        dic.put("中到大雨", R.drawable.rain);
+        dic.put("大到暴雨", R.drawable.rain);
+        dic.put("暴雨到大暴雨", R.drawable.rain);
+        dic.put("雪", R.drawable.snow);
+        dic.put("小雪", R.drawable.snow);
+        dic.put("中雪", R.drawable.snow);
+        dic.put("大雪", R.drawable.snow);
+        dic.put("暴雪", R.drawable.snow);
+        dic.put("雨雪天气", R.drawable.snow);
+        dic.put("阵雨夹雪", R.drawable.snow);
+        dic.put("雨夹雪", R.drawable.snow);
+        dic.put("阵雪", R.drawable.snow);
+        dic.put("小到中雪", R.drawable.snow);
+        dic.put("中到大雪", R.drawable.snow);
+        dic.put("大到暴雪", R.drawable.snow);
+        dic.put("中到大雪", R.drawable.snow);
 
         swp_rlt = (SwipeRefreshLayout)view.findViewById(R.id.swp_rlt);
         swp_rlt.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -183,6 +232,8 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
         tv_now_st = (TextView) view.findViewById(R.id.now_st);
         tv_now_wind_dir = (TextView) view.findViewById(R.id.tv_now_wind_dir);
         tv_lastUpdateTime = (TextView) view.findViewById(R.id.tv_lastUpdateTime);
+
+        tv_cityname.setOnClickListener(this);
 
         tv_zd_time1 = (TextView) view.findViewById(R.id.tv_zd_time1);
         tv_zd_time2 = (TextView) view.findViewById(R.id.tv_zd_time2);
@@ -290,7 +341,7 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
         /**
          * 获得当前时间的状况
          */
-        HeWeather.getWeatherNow(getActivity(), "CN101200101", Lang.CHINESE_SIMPLIFIED, Unit.METRIC, new HeWeather.OnResultWeatherNowBeanListener() {
+        HeWeather.getWeatherNow(getActivity(), locationCN, Lang.CHINESE_SIMPLIFIED, Unit.METRIC, new HeWeather.OnResultWeatherNowBeanListener() {
             @Override
             public void onError(Throwable e) {
                 Log.i("123", "Weather Now onError: ", e);
@@ -298,7 +349,7 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onSuccess(Now dataObject) {
-//                Log.i("weihuan", " Weather Now onSuccess: " + new Gson().toJson(dataObject));
+                Log.i("weihuan", " Weather Now onSuccess: " + new Gson().toJson(dataObject));
                 //先判断返回的status是否正确，当status正确时获取数据，若status不正确，可查看status对应的Code值找到原因
                 if (Code.OK.getCode().equalsIgnoreCase(dataObject.getStatus())) {
                     //此时返回数据
@@ -317,7 +368,7 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
         /**
          * 获得三天天气的预报
          */
-        HeWeather.getWeatherForecast(getActivity(), "CN101200101", Lang.CHINESE_SIMPLIFIED, Unit.METRIC, new HeWeather.OnResultWeatherForecastBeanListener() {
+        HeWeather.getWeatherForecast(getActivity(), locationCN, Lang.CHINESE_SIMPLIFIED, Unit.METRIC, new HeWeather.OnResultWeatherForecastBeanListener() {
 
             @Override
             public void onError(Throwable e) {
@@ -349,7 +400,7 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
         /**
          * 获得每小时的天气状况
          */
-        HeWeather.getWeatherHourly(getActivity(), "CN101200101", Lang.CHINESE_SIMPLIFIED, Unit.METRIC, new HeWeather.OnResultWeatherHourlyBeanListener() {
+        HeWeather.getWeatherHourly(getActivity(), locationCN, Lang.CHINESE_SIMPLIFIED, Unit.METRIC, new HeWeather.OnResultWeatherHourlyBeanListener() {
             @Override
             public void onError(Throwable e) {
                 Log.i("Hourly Error", e.toString());
@@ -358,7 +409,7 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onSuccess(Hourly dataObject) {
 
-//                Log.i("weihuan2", " Weather Now onSuccess: " + new Gson().toJson(dataObject));
+                Log.i("weihuan2", " Weather Now onSuccess: " + new Gson().toJson(dataObject));
                 //先判断返回的status是否正确，当status正确时获取数据，若status不正确，可查看status对应的Code值找到原因
                 if (Code.OK.getCode().equalsIgnoreCase(dataObject.getStatus())) {
                     //此时返回数据
@@ -382,7 +433,7 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
         /**
          * 获得生活质量数据
          */
-        HeWeather.getWeatherLifeStyle(getActivity(), "CN101200101", Lang.CHINESE_SIMPLIFIED, Unit.METRIC, new HeWeather.OnResultWeatherLifeStyleBeanListener() {
+        HeWeather.getWeatherLifeStyle(getActivity(), locationCN, Lang.CHINESE_SIMPLIFIED, Unit.METRIC, new HeWeather.OnResultWeatherLifeStyleBeanListener() {
             @Override
             public void onError(Throwable e) {
                 Log.i("123", "Weather life onError: ", e);
@@ -411,7 +462,7 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
         /**
          * 获得空气质量数据
          */
-        HeWeather.getAirNow(getActivity(), "CN101200101", Lang.CHINESE_SIMPLIFIED, Unit.METRIC, new HeWeather.OnResultAirNowBeansListener() {
+        HeWeather.getAirNow(getActivity(), locationCN, Lang.CHINESE_SIMPLIFIED, Unit.METRIC, new HeWeather.OnResultAirNowBeansListener() {
             @Override
             public void onError(Throwable e) {
                 Log.i("123", "Weather life onError: ", e);
@@ -478,12 +529,12 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
         tv_zd_time6.setText(hourlyBases.get(5).getTime().substring(11));
 
 
-        Glide.with(getActivity()).load(dic.get(hourlyBases.get(0).getCond_txt())).into(iv_zd_time1);
-        Glide.with(getActivity()).load(dic.get(hourlyBases.get(1).getCond_txt())).into(iv_zd_time2);
-        Glide.with(getActivity()).load(dic.get(hourlyBases.get(2).getCond_txt())).into(iv_zd_time3);
-        Glide.with(getActivity()).load(dic.get(hourlyBases.get(3).getCond_txt())).into(iv_zd_time4);
-        Glide.with(getActivity()).load(dic.get(hourlyBases.get(4).getCond_txt())).into(iv_zd_time5);
-        Glide.with(getActivity()).load(dic.get(hourlyBases.get(5).getCond_txt())).into(iv_zd_time6);
+        Glide.with(getActivity()).load(dic.get(hourlyBases.get(0).getCond_txt())).error(R.drawable.more_cloud).into(iv_zd_time1);
+        Glide.with(getActivity()).load(dic.get(hourlyBases.get(1).getCond_txt())).error(R.drawable.more_cloud).into(iv_zd_time2);
+        Glide.with(getActivity()).load(dic.get(hourlyBases.get(2).getCond_txt())).error(R.drawable.more_cloud).into(iv_zd_time3);
+        Glide.with(getActivity()).load(dic.get(hourlyBases.get(3).getCond_txt())).error(R.drawable.more_cloud).into(iv_zd_time4);
+        Glide.with(getActivity()).load(dic.get(hourlyBases.get(4).getCond_txt())).error(R.drawable.more_cloud).into(iv_zd_time5);
+        Glide.with(getActivity()).load(dic.get(hourlyBases.get(5).getCond_txt())).error(R.drawable.more_cloud).into(iv_zd_time6);
 
         tv_zd_wendu1.setText(hourlyBases.get(0).getTmp() + "℃");
         tv_zd_wendu2.setText(hourlyBases.get(1).getTmp() + "℃");
@@ -518,6 +569,7 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
         tv_now_wendu.setText(now.getTmp());
         tv_now_wind_dir.setText(now.getWind_dir());
         tv_now_st.setText(now.getCond_txt());
+        tv_cityname.setText(dataObject.getBasic().getLocation());
 //        Date currentTime = Calendar.getInstance().getTime();
 //        tv_lastUpdateTime.setText(currentTime.toString());
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
@@ -531,6 +583,7 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
         //3-运动
         //5-紫外线
         //2-感冒
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         String json = sp.getString(LIFECOC,"");
         Lifestyle lifestyle = new Gson().fromJson(json,Lifestyle.class);
@@ -560,9 +613,69 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
                 builder.setMessage(lifes.get(2).getTxt());
                 builder.show();
                 break;
+
+            // 选择城市
+            case R.id.cityname:
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
+                        R.layout.whether_city_item,
+                        new String[]{"自动定位","上海","北京","深圳","广州","成都","杭州","重庆","武汉","苏州","西安","天津","南京","郑州","长沙","沈阳","青岛","宁波","无锡"
+                });
+               final String allCN[] = new String[]{"","CN101020100","CN101010100","CN101280601","CN101280101","CN101270101","CN101210101","CN101040100","CN101200101","CN101190401","CN101050311","CN101030100","CN101190101","CN101180101","CN101250101","CN101070101","CN101120201","CN101210401","CN101190201"};
+
+                DialogPlus dialog = DialogPlus.newDialog(getActivity())
+                        .setAdapter(adapter)
+                        .setContentBackgroundResource(R.color.touming_hei)
+                        .setGravity(Gravity.CENTER)
+                        .setContentWidth(600)
+                        .setOnItemClickListener(new OnItemClickListener() {
+                            @Override
+                            public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                                if(position == 0){
+                                    locationByGPS();
+                                    dialog.dismiss();
+                                    return;
+                                }
+                                locationCN = allCN[position];
+                                editor.putString("first","yes");
+                                editor.commit();
+                                initWhetherData();
+                                dialog.dismiss();
+                                return;
+                            }
+                        })
+                        .setExpanded(true)  // This will enable the expand feature, (similar to android L share dialog)
+                        .create();
+                dialog.show();
+
+               break;
         }
     }
 
+    public void   locationByGPS(){
+        HeWeather.getSearch(getActivity(), new HeWeather.OnResultSearchBeansListener() {
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+                Toast.makeText(getContext(),"没有定位权限",Toast.LENGTH_SHORT);
+                return;
+            }
 
+            @Override
+            public void onSuccess(Search dataObject) {
+                if(Code.OK.getCode().equalsIgnoreCase(dataObject.getStatus())){
+                    locationCN = dataObject.getBasic().get(0).getCid();
+                    editor.putString("first","yes");
+                    editor.commit();
+                    initWhetherData();
+
+                } else{
+                    //在此查看返回数据失败的原因
+                    String status = dataObject.getStatus();
+                    Code code = Code.toEnum(status);
+                    Log.i("125", "failed code: " + code);
+                }
+            }
+        });
+    }
 
 }

@@ -1,17 +1,277 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UI.MoreFragment">
+    android:orientation="vertical"
+    tools:context=".UI.MoreFragment"
+    android:id="@+id/ll_morefragment_bkg"
+    android:background="@drawable/wallpaper_0"
+    >
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="更多"
-        android:textSize="35sp"
-        android:gravity="center"
-        />
 
-</FrameLayout>
+    <!--随机切换背景-->
+    <android.support.v7.widget.CardView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        app:cardBackgroundColor="@color/touming_hei"
+        android:foreground = "?attr/selectableItemBackground"
+        android:id="@+id/cv_change_background"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        app:cardCornerRadius="5dp"
+        android:layout_marginBottom="15dp"
+        android:padding="5dp"
+        >
+        <LinearLayout
+            android:padding="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="切换背景"
+                android:textColor="@color/_8c8c8c"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/touming_hei" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="点击随机更换背景"
+                android:textSize="15sp"
+                android:layout_marginBottom="10dp"
+                />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <!--生成二维码-->
+    <android.support.v7.widget.CardView
+        app:cardBackgroundColor="@color/touming_hei"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp"
+        app:cardCornerRadius="5dp">
+
+        <LinearLayout
+            android:padding="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="生成二维码"
+                android:textColor="@color/_8c8c8c"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/touming_hei" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="输入文本"
+                android:textSize="15sp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp">
+
+                <android.support.design.button.MaterialButton
+                    android:id="@+id/btn_genQR_ok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="10dp"
+                    android:padding="5dp"
+                    android:text="确定"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
+                    app:strokeColor="@color/eee" />
+
+                <EditText
+                    android:id="@+id/et_origin_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_toLeftOf="@id/btn_genQR_ok" />
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+    <RelativeLayout
+        android:id="@+id/rlt_showImg"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/iv_showImg"
+            android:layout_width="400dp"
+            android:layout_height="400dp"
+            android:layout_centerInParent="true"
+            />
+    </RelativeLayout>
+
+    <!--汇率转换-->
+    <android.support.v7.widget.CardView
+        app:cardBackgroundColor="@color/touming_hei"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        app:cardCornerRadius="5dp"
+        android:layout_marginBottom="15dp"
+        android:padding="5dp"
+        >
+        <LinearLayout
+            android:padding="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="汇率转换"
+                android:textColor="@color/_8c8c8c"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/touming_hei" />
+            <!--人民币和美元按钮-->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <android.support.design.button.MaterialButton
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:text="人民币"
+                    android:layout_marginRight="10dp"
+                    android:padding="5dp"
+                    app:strokeColor="@color/eee"
+                    />
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/transform"
+                    />
+                <android.support.design.button.MaterialButton
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="美元"
+                    android:layout_marginRight="10dp"
+                    android:padding="5dp"
+                    app:strokeColor="@color/eee"
+                    />
+
+            </RelativeLayout>
+            <!--输入框和确定按钮-->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp">
+
+                <android.support.design.button.MaterialButton
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
+                    android:id="@+id/btn_ok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="确定"
+                    android:layout_marginRight="10dp"
+                    android:padding="5dp"
+                    app:strokeColor="@color/eee"
+                    />
+
+                <EditText
+                    android:id="@+id/et_money_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/btn_ok"
+                    android:layout_marginRight="10dp"/>
+            </RelativeLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="0000"
+                />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <!--关于-->
+    <android.support.v7.widget.CardView
+        app:cardBackgroundColor="@color/touming_hei"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        app:cardCornerRadius="5dp"
+        android:layout_marginBottom="15dp"
+        android:padding="5dp"
+        >
+        <LinearLayout
+            android:padding="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="关于"
+                android:textColor="@color/_8c8c8c"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/touming_hei" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="© 2019-2020 版权所有 武汉理工大学 "
+                android:textSize="15sp"
+                android:layout_marginBottom="10dp"
+                />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+
+</LinearLayout>
