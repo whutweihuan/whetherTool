@@ -100,6 +100,7 @@
                 android:layout_marginTop="5dp">
 
                 <android.support.design.button.MaterialButton
+                    android:backgroundTint="@color/a0a0a0"
                     android:id="@+id/btn_genQR_ok"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -111,6 +112,7 @@
                     app:strokeColor="@color/eee" />
 
                 <EditText
+                    android:lines="1"
                     android:id="@+id/et_origin_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -168,6 +170,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <android.support.design.button.MaterialButton
+                    android:id="@+id/btn_money1"
+                    android:backgroundTint="@color/a0a0a0"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -175,15 +179,18 @@
                     android:text="人民币"
                     android:layout_marginRight="10dp"
                     android:padding="5dp"
-                    app:strokeColor="@color/eee"
+                    android:layout_marginLeft="5dp"
                     />
                 <ImageView
+                    android:id="@+id/iv_swap_money"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_centerInParent="true"
                     android:src="@drawable/transform"
                     />
                 <android.support.design.button.MaterialButton
+                    android:id="@+id/btn_money2"
+                    android:backgroundTint="@color/a0a0a0"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -203,8 +210,9 @@
                 android:layout_marginTop="5dp">
 
                 <android.support.design.button.MaterialButton
+                    android:backgroundTint="@color/a0a0a0"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
-                    android:id="@+id/btn_ok"
+                    android:id="@+id/btn_money_ok"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -218,10 +226,16 @@
                     android:id="@+id/et_money_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@id/btn_ok"
-                    android:layout_marginRight="10dp"/>
+                    android:layout_alignParentStart="true"
+                    android:inputType="number|numberDecimal"
+                    android:layout_toLeftOf="@id/btn_money_ok"
+                    android:lines="1"
+                    android:maxLength="30"
+                    android:layout_marginRight="10dp"
+                    />
             </RelativeLayout>
             <TextView
+                android:id="@+id/tv_money_result"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"

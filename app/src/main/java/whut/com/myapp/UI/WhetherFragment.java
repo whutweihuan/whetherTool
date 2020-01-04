@@ -6,12 +6,14 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -136,7 +138,6 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
     RelativeLayout rlt_tip_fever;
 
 
-
     // 空气质量
 
     ArcProgress arc_progress;
@@ -214,13 +215,23 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
         dic.put("小到中雪", R.drawable.snow);
         dic.put("中到大雪", R.drawable.snow);
         dic.put("大到暴雪", R.drawable.snow);
-        dic.put("中到大雪", R.drawable.snow);
+        dic.put("霾", R.drawable.frog);
+        dic.put("薄雾", R.drawable.frog);
+        dic.put("雾", R.drawable.frog);
+        dic.put("浓雾", R.drawable.frog);
+        dic.put("强浓雾", R.drawable.frog);
+        dic.put("中度霾", R.drawable.frog);
+        dic.put("重度霾", R.drawable.frog);
+        dic.put("严重霾", R.drawable.frog);
+        dic.put("大雾", R.drawable.frog);
+        dic.put("特强浓雾", R.drawable.frog);
 
-        swp_rlt = (SwipeRefreshLayout)view.findViewById(R.id.swp_rlt);
+
+        swp_rlt = (SwipeRefreshLayout) view.findViewById(R.id.swp_rlt);
         swp_rlt.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                editor.putString("first","yes");
+                editor.putString("first", "yes");
                 editor.commit();
                 initWhetherData();
                 swp_rlt.setRefreshing(false);
@@ -305,29 +316,29 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
         final String first = sp.getString("first", "yes");
         // 含有数据，不是第一次
         if (first.equals("no")) {
-            try{
+            try {
                 Gson gson = new Gson();
-                String json = sp.getString(NOW_STAUS,"");
-                Now now = gson.fromJson(json,Now.class);
+                String json = sp.getString(NOW_STAUS, "");
+                Now now = gson.fromJson(json, Now.class);
                 setNowView(now);
 
-                json = sp.getString(HOURLY,"");
-                Hourly hourly = gson.fromJson(json,Hourly.class);
+                json = sp.getString(HOURLY, "");
+                Hourly hourly = gson.fromJson(json, Hourly.class);
                 setHourView(hourly);
 
-                json = sp.getString(MULTDAY,"");
-                Forecast forecast = gson.fromJson(json,Forecast.class);
+                json = sp.getString(MULTDAY, "");
+                Forecast forecast = gson.fromJson(json, Forecast.class);
                 setMtdView(forecast);
 
-                json = sp.getString(LIFECOC,"");
-                Lifestyle lifestyle = gson.fromJson(json,Lifestyle.class);
+                json = sp.getString(LIFECOC, "");
+                Lifestyle lifestyle = gson.fromJson(json, Lifestyle.class);
                 setLifeView(lifestyle);
 
-                json = sp.getString(AIRCOC,"");
-                AirNow airNow = gson.fromJson(json,AirNow.class);
+                json = sp.getString(AIRCOC, "");
+                AirNow airNow = gson.fromJson(json, AirNow.class);
                 setAirView(airNow);
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -335,7 +346,7 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
         }
 
         // 第一次运行，现在不是了
-        editor.putString("first","no");
+        editor.putString("first", "no");
         editor.commit();
 
         /**
@@ -563,7 +574,7 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
         tv_mtd_cond3.setText(forecastBases.get(2).getCond_txt_d());
     }
 
-    public void setNowView(Now dataObject){
+    public void setNowView(Now dataObject) {
         NowBase now = dataObject.getNow();
         Update update = dataObject.getUpdate();
         tv_now_wendu.setText(now.getTmp());
@@ -585,31 +596,31 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
         //2-感冒
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        String json = sp.getString(LIFECOC,"");
-        Lifestyle lifestyle = new Gson().fromJson(json,Lifestyle.class);
+        String json = sp.getString(LIFECOC, "");
+        Lifestyle lifestyle = new Gson().fromJson(json, Lifestyle.class);
         List<LifestyleBase> lifes = lifestyle.getLifestyle();
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.rlt_tips_cloth:
                 builder.setTitle("衣物");
-                builder.setPositiveButton("确定",null);
+                builder.setPositiveButton("确定", null);
                 builder.setMessage(lifes.get(1).getTxt());
                 builder.show();
                 break;
             case R.id.rlt_tips_sport:
                 builder.setTitle("运动");
-                builder.setPositiveButton("确定",null);
+                builder.setPositiveButton("确定", null);
                 builder.setMessage(lifes.get(3).getTxt());
                 builder.show();
                 break;
             case R.id.rlt_tips_zwx:
                 builder.setTitle("紫外线");
-                builder.setPositiveButton("确定",null);
+                builder.setPositiveButton("确定", null);
                 builder.setMessage(lifes.get(5).getTxt());
                 builder.show();
                 break;
             case R.id.rlt_tips_fever:
                 builder.setTitle("感冒");
-                builder.setPositiveButton("确定",null);
+                builder.setPositiveButton("确定", null);
                 builder.setMessage(lifes.get(2).getTxt());
                 builder.show();
                 break;
@@ -618,25 +629,31 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
             case R.id.cityname:
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
                         R.layout.whether_city_item,
-                        new String[]{"自动定位","上海","北京","深圳","广州","成都","杭州","重庆","武汉","苏州","西安","天津","南京","郑州","长沙","沈阳","青岛","宁波","无锡"
-                });
-               final String allCN[] = new String[]{"","CN101020100","CN101010100","CN101280601","CN101280101","CN101270101","CN101210101","CN101040100","CN101200101","CN101190401","CN101050311","CN101030100","CN101190101","CN101180101","CN101250101","CN101070101","CN101120201","CN101210401","CN101190201"};
+                        new String[]{"自动定位", "上海", "北京", "深圳", "广州", "成都", "杭州", "重庆", "武汉", "苏州", "西安", "天津", "南京", "郑州", "长沙", "沈阳", "青岛", "宁波", "无锡"
+                        });
+                final String allCN[] = new String[]{"", "CN101020100", "CN101010100", "CN101280601", "CN101280101", "CN101270101", "CN101210101", "CN101040100", "CN101200101", "CN101190401", "CN101050311", "CN101030100", "CN101190101", "CN101180101", "CN101250101", "CN101070101", "CN101120201", "CN101210401", "CN101190201"};
+
+                // 获取屏幕宽度
+                DisplayMetrics displayMetrics = new DisplayMetrics();
+                getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+                int height = displayMetrics.heightPixels;
+                int width = (int) (displayMetrics.widthPixels * 0.6);
 
                 DialogPlus dialog = DialogPlus.newDialog(getActivity())
                         .setAdapter(adapter)
                         .setContentBackgroundResource(R.color.touming_hei)
                         .setGravity(Gravity.CENTER)
-                        .setContentWidth(600)
+                        .setContentWidth(width)
                         .setOnItemClickListener(new OnItemClickListener() {
                             @Override
                             public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                                if(position == 0){
+                                if (position == 0) {
                                     locationByGPS();
                                     dialog.dismiss();
                                     return;
                                 }
                                 locationCN = allCN[position];
-                                editor.putString("first","yes");
+                                editor.putString("first", "yes");
                                 editor.commit();
                                 initWhetherData();
                                 dialog.dismiss();
@@ -647,28 +664,28 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
                         .create();
                 dialog.show();
 
-               break;
+                break;
         }
     }
 
-    public void   locationByGPS(){
+    public void locationByGPS() {
         HeWeather.getSearch(getActivity(), new HeWeather.OnResultSearchBeansListener() {
             @Override
             public void onError(Throwable e) {
                 e.printStackTrace();
-                Toast.makeText(getContext(),"没有定位权限",Toast.LENGTH_SHORT);
+                Toast.makeText(getContext(), "没有定位权限", Toast.LENGTH_SHORT);
                 return;
             }
 
             @Override
             public void onSuccess(Search dataObject) {
-                if(Code.OK.getCode().equalsIgnoreCase(dataObject.getStatus())){
+                if (Code.OK.getCode().equalsIgnoreCase(dataObject.getStatus())) {
                     locationCN = dataObject.getBasic().get(0).getCid();
-                    editor.putString("first","yes");
+                    editor.putString("first", "yes");
                     editor.commit();
                     initWhetherData();
 
-                } else{
+                } else {
                     //在此查看返回数据失败的原因
                     String status = dataObject.getStatus();
                     Code code = Code.toEnum(status);
