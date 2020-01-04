@@ -1,7 +1,6 @@
 package whut.com.myapp.UI;
 
 
-import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -23,27 +22,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.ViewTarget;
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.orhanobut.dialogplus.DialogPlus;
-import com.orhanobut.dialogplus.ListHolder;
 import com.orhanobut.dialogplus.OnItemClickListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.lang.reflect.Array;
-import java.nio.file.FileSystem;
-import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -184,10 +174,10 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
                  break;
             case R.id.btn_money1:
                 ArrayAdapter adapter = new ArrayAdapter(getContext(),
-                        android.R.layout.simple_expandable_list_item_1,moneyName);
+                        R.layout.dialog_simple_itme1,moneyName);
                 DialogPlus dialog = DialogPlus.newDialog(getActivity())
                         .setAdapter(adapter)
-                        .setContentBackgroundResource(R.color.touming_hei)
+                        .setContentBackgroundResource(R.color.white)
                         .setGravity(Gravity.BOTTOM)
                         .setOnItemClickListener(new OnItemClickListener() {
                             @Override
@@ -204,10 +194,10 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
 
             case R.id.btn_money2:
                 ArrayAdapter adapter2 = new ArrayAdapter(getContext(),
-                        android.R.layout.simple_expandable_list_item_1,moneyName);
+                        R.layout.dialog_simple_itme1,moneyName);
                 DialogPlus dialog2 = DialogPlus.newDialog(getActivity())
                         .setAdapter(adapter2)
-                        .setContentBackgroundResource(R.color.touming_hei)
+                        .setContentBackgroundResource(R.color.white)
                         .setGravity(Gravity.BOTTOM)
                         .setOnItemClickListener(new OnItemClickListener() {
                             @Override

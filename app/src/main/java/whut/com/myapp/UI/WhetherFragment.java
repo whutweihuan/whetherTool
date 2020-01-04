@@ -12,8 +12,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -628,7 +626,7 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
             // 选择城市
             case R.id.cityname:
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
-                        R.layout.whether_city_item,
+                        R.layout.dialog_simple_itme1,
                         new String[]{"自动定位", "上海", "北京", "深圳", "广州", "成都", "杭州", "重庆", "武汉", "苏州", "西安", "天津", "南京", "郑州", "长沙", "沈阳", "青岛", "宁波", "无锡"
                         });
                 final String allCN[] = new String[]{"", "CN101020100", "CN101010100", "CN101280601", "CN101280101", "CN101270101", "CN101210101", "CN101040100", "CN101200101", "CN101190401", "CN101050311", "CN101030100", "CN101190101", "CN101180101", "CN101250101", "CN101070101", "CN101120201", "CN101210401", "CN101190201"};
@@ -637,13 +635,12 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
                 DisplayMetrics displayMetrics = new DisplayMetrics();
                 getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
                 int height = displayMetrics.heightPixels;
-                int width = (int) (displayMetrics.widthPixels * 0.6);
+                int width = (int) (displayMetrics.widthPixels * 0.9);
 
                 DialogPlus dialog = DialogPlus.newDialog(getActivity())
                         .setAdapter(adapter)
-                        .setContentBackgroundResource(R.color.touming_hei)
-                        .setGravity(Gravity.CENTER)
-                        .setContentWidth(width)
+                        .setContentBackgroundResource(R.color.white)
+                        .setGravity(Gravity.BOTTOM)
                         .setOnItemClickListener(new OnItemClickListener() {
                             @Override
                             public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
