@@ -26,13 +26,33 @@
 
         </me.dm7.barcodescanner.zxing.ZXingScannerView>
 
-        <!--下面的两个按钮-->
+        <!--下面的三个按钮-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:orientation="horizontal"
             >
+            <!--文件-->
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                >
+                <android.support.design.button.MaterialButton
+                    android:id="@+id/btn_camera_file"
+                    android:layout_width="110dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:padding="7dp"
+                    android:text="文件"
+                    android:gravity="center"
+                    app:cornerRadius="5dp"
+                    android:backgroundTint="@color/cccccc"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse" />
+            </RelativeLayout>
+
+            <!--确定-->
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -40,7 +60,7 @@
                 >
                 <android.support.design.button.MaterialButton
                     android:id="@+id/btn_camera_continue"
-                    android:layout_width="150dp"
+                    android:layout_width="110dp"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:padding="7dp"
@@ -51,6 +71,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse" />
             </RelativeLayout>
 
+            <!--取消-->
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -58,7 +79,7 @@
                 >
                 <android.support.design.button.MaterialButton
                     android:id="@+id/btn_camera_cancel"
-                    android:layout_width="150dp"
+                    android:layout_width="110dp"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:padding="7dp"

@@ -41,5 +41,7 @@ dependencies {
     implementation 'com.journeyapps:zxing-android-embedded:3.6.0'
     implementation 'me.dm7.barcodescanner:zxing:1.9.13'
     implementation 'com.karumi:dexter:5.0.0'
+    implementation 'com.leon:lfilepickerlibrary:1.8.0'
+    implementation 'me.rosuh:AndroidFilePicker:0.6.0'
 
 }

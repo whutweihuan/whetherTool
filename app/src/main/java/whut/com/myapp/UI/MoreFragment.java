@@ -4,7 +4,9 @@ package whut.com.myapp.UI;
 import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -29,7 +31,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.DecodeHintType;
+import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Result;
+import com.google.zxing.common.GlobalHistogramBinarizer;
+import com.google.zxing.qrcode.QRCodeReader;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.karumi.dexter.Dexter;
@@ -38,26 +45,37 @@ import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
+import com.leon.lfilepickerlibrary.LFilePicker;
+import com.leon.lfilepickerlibrary.utils.Constant;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
+import me.rosuh.filepicker.config.FilePickerManager;
 import whut.com.myapp.R;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class MoreFragment extends Fragment implements View.OnClickListener {
+    MoreFragment mMoreFragment;
+
+
     // 扫描二维码
     private EditText et_origin_text;
     private MaterialButton btn_genQR_ok;
@@ -86,10 +104,13 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
     private RelativeLayout rlt_camera;
     private MaterialButton btn_camera_continue;
     private MaterialButton btn_camera_cancel;
+    private MaterialButton btn_camera_file;
+    private int REQUESTCODE_FROM_ACTIVITY = 1000;
 
 
     public MoreFragment() {
         // Required empty public constructor
+        mMoreFragment = this;
     }
 
 
@@ -138,8 +159,10 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
         rlt_camera = (RelativeLayout) view.findViewById(R.id.rlt_camera);
         btn_camera_continue = (MaterialButton) view.findViewById(R.id.btn_camera_continue);
         btn_camera_cancel = (MaterialButton) view.findViewById(R.id.btn_camera_cancel);
+        btn_camera_file = (MaterialButton) view.findViewById(R.id.btn_camera_file);
         btn_camera_cancel.setOnClickListener(this);
         btn_camera_continue.setOnClickListener(this);
+        btn_camera_file.setOnClickListener(this);
         btn_camera_continue.setClickable(false);
 
         mResultHandler = new ZXingScannerView.ResultHandler() {
@@ -148,7 +171,7 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
 //                scanner_view.resumeCameraPreview(mResultHandler); //重新进入扫描二维码
                 btn_camera_continue.setClickable(true);
 //                Toast.makeText(getContext(), "内容=" + result.getText() + ",格式=" + result.getBarcodeFormat().toString(), Toast.LENGTH_SHORT).show();
-                Toast.makeText(getContext(),"已经复制到粘贴板中",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "已经复制到粘贴板中", Toast.LENGTH_SHORT).show();
 
                 // 复制到系统粘贴板中
                 ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(getActivity().CLIPBOARD_SERVICE);
@@ -275,6 +298,23 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
                 scanner_view.stopCamera();
                 rlt_camera.setVisibility(View.GONE);
                 break;
+            case R.id.btn_camera_file:
+
+//                new LFilePicker()
+//                        .withActivity(getActivity())
+//                        .withSupportFragment(mMoreFragment)
+//                        .withRequestCode(REQUESTCODE_FROM_ACTIVITY)
+//                        .withStartPath("/storage/emulated/0/")
+//                        .withIsGreater(false)
+//                        .withFileSize(500 * 1024)
+//                        .start();
+                FilePickerManager.INSTANCE
+                        .from(this)
+                        .forResult(FilePickerManager.REQUEST_CODE);
+                scanner_view.stopCamera();
+                rlt_camera.setVisibility(View.GONE);
+
+                break;
         }
 
     }
@@ -324,4 +364,56 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
         scanner_view.stopCamera();
         rlt_camera.setVisibility(View.GONE);
     }
+
+    // 这个是文件选择的方法
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == FilePickerManager.INSTANCE.REQUEST_CODE) {
+            List<String> list = FilePickerManager.INSTANCE.obtainData();
+            Toast.makeText(getActivity(), "选中了" + list.size() + "个文件", Toast.LENGTH_SHORT).show();
+            if(list.size() == 0) {
+                return;
+            }
+
+            FilePickerManager.INSTANCE.saveData(new ArrayList<String>());
+
+            FileInputStream fis = null;
+            com.google.zxing.Result result = null;
+            Hashtable<DecodeHintType, Object> hints = new Hashtable<DecodeHintType, Object>();
+            hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+            hints.put(DecodeHintType.POSSIBLE_FORMATS, BarcodeFormat.QR_CODE);
+            hints.put(DecodeHintType.CHARACTER_SET, "utf-8");
+
+            try {
+                fis = new FileInputStream(list.get(0));
+                Bitmap bitmap  = BitmapFactory.decodeStream(fis);
+                int width = bitmap.getWidth();
+                int height = bitmap.getHeight();
+                int []pixels = new int[width*height];
+                bitmap.getPixels(pixels,0,width,0,0,width,height);
+                // 新建一个RGBLuminanceSource对象
+                RGBLuminanceSource source = new RGBLuminanceSource(width,height,pixels);
+                // 将图片转换成二进制图片
+                BinaryBitmap binaryBitmap = new BinaryBitmap(new GlobalHistogramBinarizer(source));
+                QRCodeReader reader = new QRCodeReader();
+                result = reader.decode(binaryBitmap, hints);// 开始解析
+//                Toast.makeText(getActivity(),result.getText(),Toast.LENGTH_SHORT).show();
+
+                // 复制到系统粘贴板中
+                ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(getActivity().CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("QRcode", result.getText().toString());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(getActivity(),"已经复制到粘贴板",Toast.LENGTH_SHORT).show();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(getActivity(),"解析失败",Toast.LENGTH_SHORT).show();
+            }
+
+        }
+    }
+
+
+
 }
