@@ -40,7 +40,7 @@ public class MainUIActivity extends AppCompatActivity implements ZXingScannerVie
 //        }
     }
     public void initView(){
-        vp_main=(ViewPager)findViewById(R.id.vp_main);
+        vp_main = (ViewPager)findViewById(R.id.vp_main);
         radiogroup=(ToolBarRadioGroup) findViewById(R.id.radiogroup);
 
         vp_main.setAdapter(mAdapter);
