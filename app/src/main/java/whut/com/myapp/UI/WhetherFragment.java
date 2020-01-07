@@ -170,6 +170,7 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_whether, container, false);
         sp = getActivity().getSharedPreferences("whether_data", MODE_PRIVATE);
         editor = sp.edit();
+        locationCN = sp.getString("locationCN",locationCN);
 
         initView(view);
 
@@ -373,6 +374,7 @@ public class WhetherFragment extends Fragment implements View.OnClickListener {
                 if (Code.OK.getCode().equalsIgnoreCase(dataObject.getStatus())) {
                     //此时返回数据
                     editor.putString(NOW_STAUS, new Gson().toJson(dataObject));
+                    editor.putString("locationCN",dataObject.getBasic().getLocation());
                     editor.commit();
                     setNowView(dataObject);
                 } else {

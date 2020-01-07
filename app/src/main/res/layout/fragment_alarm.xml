@@ -1,17 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/wallpaper_0"
     tools:context=".UI.AlarmFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="闹钟"
-        android:gravity="center"
-        android:textSize="35sp"
-        />
 
-</FrameLayout>
+    <!--显示闹钟选取时间-->
+    <RelativeLayout
+
+        android:id="@+id/rl_time_picker"
+        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:padding="5dp"
+            android:layout_alignParentTop="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <Button
+                android:text="取消"
+                android:padding="2dp"
+                android:layout_alignParentLeft="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:text="确定"
+                android:padding="2dp"
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+
+        <TimePicker
+            android:layout_centerInParent="true"
+            android:id="@+id/time_picker"
+            android:layout_width="wrap_content"
+            android:timePickerMode="spinner"
+            android:layout_height="wrap_content">
+
+        </TimePicker>
+
+    </RelativeLayout>
+
+    <!--显示闹钟条目-->
+    <RelativeLayout
+        android:visibility="invisible"
+        android:id="@+id/rlt_alarm_item_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        >
+
+        <TextView
+            android:id="@+id/tv_current_time"
+            android:layout_width="match_parent"
+            android:layout_height="260dp"
+            android:layout_alignParentTop="true"
+            android:gravity="center"
+            android:text="09:20:13"
+            android:textSize="50dp" />
+
+        <ListView
+            android:id="@+id/lv_alarm_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_current_time">
+
+        </ListView>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+
+            <Button
+                android:id="@+id/btn_add_alarm"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:layout_margin="10dp"
+                android:background="@drawable/add_alarm" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

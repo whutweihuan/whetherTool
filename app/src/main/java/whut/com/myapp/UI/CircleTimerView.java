@@ -435,6 +435,7 @@ public class CircleTimerView extends View {
     public void startTimer() {
         Log.d(TAG, "startTimer");
         if (mCurrentRadian > 0 && !mStarted) {
+            timer = new Timer();
             timerTask = new TimerTask() {
                 @Override
                 public void run() {
