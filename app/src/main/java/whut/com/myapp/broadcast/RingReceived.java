@@ -20,6 +20,7 @@ public class RingReceived extends BroadcastReceiver {
             Log.i("test","闹钟响了");
             //跳转到Activity
             Intent intent1=new Intent(context,RingActivity.class);
+            intent1.putExtra("pos",intent.getStringExtra("pos"));
             //广播跳转到activity.必须给intent设置标志位flags
 
             intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

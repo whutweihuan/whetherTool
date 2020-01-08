@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import android.widget.TimePicker;
 
 import com.google.gson.Gson;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,13 +42,14 @@ import whut.com.myapp.bean.AddAlarmItem;
  */
 public class AlarmFragment extends Fragment implements View.OnClickListener {
     private Button btn_add_alarm;
-    private AlarmAdapter alarmAdapter;
+
     private ListView lv_alarm_list;
     private TextView tv_current_time;
     private TimePicker time_picker;
 
     //
-    List<AddAlarmItem> addAlarmlist = new ArrayList<>();
+    static List<AddAlarmItem> addAlarmlist = new ArrayList<>();
+    static AlarmAdapter alarmAdapter;
 
 
     // 选择时间确定取消
@@ -100,7 +103,6 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_alarm, container, false);
         sp = getActivity().getSharedPreferences("Alarm", Context.MODE_PRIVATE);
         editor = sp.edit();
-        setAlarm();
         initView(view);
 
 
@@ -121,13 +123,13 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
         tv_current_time.setText(format);
         handler.post(timedTask);
 
-        btn_picktime_cancel = (Button)view.findViewById(R.id.btn_picktime_cancel);
-        btn_picktime_ok = (Button)view.findViewById(R.id.btn_picktime_ok);
+        btn_picktime_cancel = (Button) view.findViewById(R.id.btn_picktime_cancel);
+        btn_picktime_ok = (Button) view.findViewById(R.id.btn_picktime_ok);
         btn_picktime_cancel.setOnClickListener(this);
         btn_picktime_ok.setOnClickListener(this);
 
-        rlt_time_picker = (RelativeLayout)view.findViewById(R.id.rlt_time_picker);
-        rlt_alarm_item_list = (RelativeLayout)view.findViewById(R.id.rlt_alarm_item_list);
+        rlt_time_picker = (RelativeLayout) view.findViewById(R.id.rlt_time_picker);
+        rlt_alarm_item_list = (RelativeLayout) view.findViewById(R.id.rlt_alarm_item_list);
 
 
 //        ArrayList<AddAlarmItem> addAlarmlist  = new ArrayList<>();
@@ -140,11 +142,11 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
 //        editor.commit();
 
         AddAlarmItem[] temp = new Gson().fromJson(sp.getString(TAG, ""), AddAlarmItem[].class);
-//        List<AddAlarmItem> addAlarmlist = null;
+        List<AddAlarmItem> temp2 ;
         try {
-            addAlarmlist = Arrays.asList(temp);
-            addAlarmlist = new ArrayList(addAlarmlist);
-        }catch (Exception  e){
+            temp2 = Arrays.asList(temp);
+            addAlarmlist = new ArrayList(temp2);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -152,13 +154,17 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
             alarmAdapter = new AlarmAdapter(addAlarmlist, getActivity());
             lv_alarm_list.setAdapter(alarmAdapter);
 
-            time_picker = (TimePicker)view.findViewById(R.id.time_picker);
-        }catch (Exception e){
+            time_picker = (TimePicker) view.findViewById(R.id.time_picker);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-
-
+        // 初始化闹铃
+        for (int i = 0; addAlarmlist != null && i < addAlarmlist.size(); i++) {
+            pickTime = addAlarmlist.get(i).getAlarmTime();
+            setAlarm();
+        }
+        pickTime = "00:00";
     }
 
     @Override
@@ -179,9 +185,15 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
 //                Log.i("abcd",pickTime);
                 rlt_time_picker.setVisibility(View.GONE);
                 rlt_alarm_item_list.setVisibility(View.VISIBLE);
-                addAlarmlist.add(new AddAlarmItem(pickTime,1));
+                setAlarm();
+
+                addAlarmlist.add(new AddAlarmItem(pickTime, 1));
                 alarmAdapter.setAlarmAdapter(addAlarmlist);
                 alarmAdapter.notifyDataSetChanged();
+
+                String json = new Gson().toJson(addAlarmlist);
+                editor.putString(TAG,json);
+                editor.commit();
 
                 break;
 
@@ -190,7 +202,7 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public void selectTime(){
+    public void selectTime() {
         rlt_alarm_item_list.setVisibility(View.GONE);
         rlt_time_picker.setVisibility(View.VISIBLE);
         time_picker.setIs24HourView(true);
@@ -206,38 +218,31 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                String H = hourOfDay +"",M = minute + "";
-                if(Integer.valueOf(hourOfDay) < 10){
+                String H = hourOfDay + "", M = minute + "";
+                if (Integer.valueOf(hourOfDay) < 10) {
                     H = "0" + hourOfDay;
                 }
-                if(Integer.valueOf(minute)<10){
+                if (Integer.valueOf(minute) < 10) {
                     M = "0" + minute;
                 }
-
-                pickTime  = H + ":" + M;
-//                Log.d("abcdefg",pickTime);
-
-
-
-//                // 保存闹钟实例的小时
-//                mAlarmClock.setHour(hourOfDay);
-//                // 保存闹钟实例的分钟
-//                mAlarmClock.setMinute(minute);
-//                // 计算倒计时显示
-//                displayCountDown();
-
-
+                pickTime = H + ":" + M;
             }
 
         });
     }
 
     // 利用 AlarmManager 设置闹钟
-    public void setAlarm(){
+    public void setAlarm() {
+
 //        int time = 60 * 1000 * 30;//30分钟
-        int time = 1;
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        String curentTime = sdf.format(new Date());
+        long time = distanceOfTime(pickTime, curentTime) - 500;
         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent();
+        // 传送一个位置，便于移除
+        intent.putExtra("pos", "" + addAlarmlist.size());
+//        intent.setType("text/plain");
         intent.setAction("com.example.myapp.RING");
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0x101, intent, 0);
 
@@ -255,16 +260,22 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-//   a 和 b 的时间间隔, b 为参照物
-    long distanceOfTime(String a,String b){
-//        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        Date date1 = new Date(a);
-        Date date2 = new Date(b);
-        long dist = date1.getTime() - date2.getTime();
-        if(dist < 0){
-            dist += (60 * 60 *24);
+    //   a 和 b 的时间间隔, b 为参照物
+    long distanceOfTime(String a, String b) {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        Date date1 = null, date2 = null;
+        try {
+            date1 = sdf.parse(a);
+            date2 = sdf.parse(b);
+            long dist = date1.getTime() - date2.getTime();
+            if (dist < 0) {
+                dist += (60 * 60 * 24 * 1000);
+            }
+            return dist;
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-        return  dist;
+        return 0x0fffffff;
     }
 
 
