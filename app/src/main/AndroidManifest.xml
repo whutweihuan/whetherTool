@@ -3,21 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="whut.com.myapp">
 
+    <!-- <receiver android:process=":remote" android:name=".Alarm"></receiver> -->
+    <!-- <uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission> -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     //ACCESS_FINE_LOCATION：允许APP访问精确地理位置。
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     //ACCESS_COARSE_LOCATION：允许APP访问大概地理位置
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     // 读写权限
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     // 相机权限
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
-
 
     <application
         android:allowBackup="true"
@@ -33,7 +35,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".UI.MainUIActivity"></activity>
+        <activity android:name=".UI.MainUIActivity" />
+
+        <service
+            android:name=".service.RepetitionService"
+            android:exported="false" />
+
+        <activity
+            android:name=".UI.RingActivity"
+            android:label="@string/title_activity_ring"
+            android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -66,4 +66,8 @@ public class AlarmAdapter extends BaseAdapter {
         TextView alarmTime;
     }
 
+    public void setAlarmAdapter(List<AddAlarmItem> items){
+        mAddAlarmArrayList = items;
+    }
+
 }

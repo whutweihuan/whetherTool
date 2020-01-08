@@ -10,8 +10,8 @@
 
     <!--显示闹钟选取时间-->
     <RelativeLayout
-
-        android:id="@+id/rl_time_picker"
+        android:visibility="gone"
+        android:id="@+id/rlt_time_picker"
         android:layout_centerInParent="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -21,18 +21,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <Button
-                android:text="取消"
+                android:id="@+id/btn_picktime_cancel"
+                android:background="@drawable/btn_cancel"
                 android:padding="2dp"
                 android:layout_alignParentLeft="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="40dp"
+                android:layout_height="40dp" />
 
             <Button
-                android:text="确定"
+                android:id="@+id/btn_picktime_ok"
+                android:background="@drawable/btn_ok"
                 android:padding="2dp"
                 android:layout_alignParentRight="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="40dp"
+                android:layout_height="40dp" />
 
         </RelativeLayout>
 
@@ -50,7 +52,7 @@
 
     <!--显示闹钟条目-->
     <RelativeLayout
-        android:visibility="invisible"
+
         android:id="@+id/rlt_alarm_item_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
