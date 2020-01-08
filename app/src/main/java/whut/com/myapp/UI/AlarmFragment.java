@@ -46,6 +46,9 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
     private ListView lv_alarm_list;
     private TextView tv_current_time;
     private TimePicker time_picker;
+    private Button btn_clean_alarm;
+
+    private static int  requestid = 1;
 
     //
     static List<AddAlarmItem> addAlarmlist = new ArrayList<>();
@@ -63,9 +66,9 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
 //    int pickStatus = 0;
 
     // 缓存
-    SharedPreferences sp;
-    SharedPreferences.Editor editor;
-    String TAG = "AlarmList";
+    static SharedPreferences sp;
+    static SharedPreferences.Editor editor;
+    static String TAG = "AlarmList";
 
     // 选择的时间
     String pickTime = "00:00";
@@ -115,6 +118,8 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
         btn_add_alarm.setOnClickListener(this);
         lv_alarm_list = (ListView) view.findViewById(R.id.lv_alarm_list);
         tv_current_time = (TextView) view.findViewById(R.id.tv_current_time);
+        btn_clean_alarm = (Button) view.findViewById(R.id.btn_clean_alarm);
+        btn_clean_alarm.setOnClickListener(this);
 
         // 采用 handler 刷新时间
         Date date = new Date();
@@ -196,6 +201,9 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
                 editor.commit();
 
                 break;
+            case R.id.btn_clean_alarm:
+                cleanAlarm();
+                break;
 
 
         }
@@ -235,16 +243,18 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
     public void setAlarm() {
 
 //        int time = 60 * 1000 * 30;//30分钟
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        String pt = pickTime +":00";
         String curentTime = sdf.format(new Date());
-        long time = distanceOfTime(pickTime, curentTime) - 500;
+        long time = distanceOfTime(pt, curentTime) + 3000;
         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent();
         // 传送一个位置，便于移除
         intent.putExtra("pos", "" + addAlarmlist.size());
 //        intent.setType("text/plain");
         intent.setAction("com.example.myapp.RING");
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0x101, intent, 0);
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0x101, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), ++requestid, intent, 0);
 
 
 //        第一个参数表示闹钟类型，
@@ -262,7 +272,7 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
 
     //   a 和 b 的时间间隔, b 为参照物
     long distanceOfTime(String a, String b) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         Date date1 = null, date2 = null;
         try {
             date1 = sdf.parse(a);
@@ -276,6 +286,21 @@ public class AlarmFragment extends Fragment implements View.OnClickListener {
             e.printStackTrace();
         }
         return 0x0fffffff;
+    }
+
+    public void cleanAlarm() {
+        addAlarmlist = new ArrayList<>();
+        alarmAdapter.setAlarmAdapter(addAlarmlist);
+        alarmAdapter.notifyDataSetChanged();
+        String json =  new Gson().toJson(addAlarmlist);
+        editor.putString(TAG,json);
+        editor.commit();
+        onResume();
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+
     }
 
 

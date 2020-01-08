@@ -8,6 +8,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 
 import com.google.gson.Gson;
@@ -58,13 +59,25 @@ public class RingActivity extends AppCompatActivity {
                 i--;
             }
         }
-
+        String json = new Gson().toJson(AlarmFragment.addAlarmlist);
+        AlarmFragment.editor.putString(AlarmFragment.TAG,json);
+        AlarmFragment.editor.commit();
 
 //        }
 
 
         mediaPlayer.stop();
         finish();
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            return false;
+        }
+
+        return super.onKeyUp(keyCode, event);
+
     }
 
 }
